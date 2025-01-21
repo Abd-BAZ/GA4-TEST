@@ -73,3 +73,36 @@ h1 {
     background-color: #5a67d8;
     border-color: #5a67d8;
 }
+
+/* Internal Tabs */
+.internal-tabs {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.tab-button {
+    background-color: #5a67d8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.tab-button:hover {
+    background-color: #434fa7;
+}
+
+.tab-content {
+    margin-top: 20px;
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}

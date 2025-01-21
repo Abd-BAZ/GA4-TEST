@@ -18,6 +18,39 @@
     <div class="container">
         <h1>About GA-4</h1>
         <p>This page provides information about the GA-4 website and its purpose.</p>
+
+        <!-- Internal Tabs -->
+        <div class="internal-tabs">
+            <button class="tab-button" onclick="showTab('mission')">Mission</button>
+            <button class="tab-button" onclick="showTab('team')">Team</button>
+            <button class="tab-button" onclick="showTab('contact')">Contact</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="mission" class="tab-content">
+            <h2>Our Mission</h2>
+            <p>GA-4 aims to provide seamless access to data and analytics for decision-making and insights.</p>
+        </div>
+        <div id="team" class="tab-content" style="display: none;">
+            <h2>Our Team</h2>
+            <p>Meet the passionate individuals behind GA-4.</p>
+        </div>
+        <div id="contact" class="tab-content" style="display: none;">
+            <h2>Contact Us</h2>
+            <p>Email us at: support@ga4.com</p>
+        </div>
     </div>
+
+    <!-- JavaScript -->
+    <script>
+        function showTab(tabId) {
+            // Hide all tab contents
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.style.display = 'none');
+            
+            // Show the selected tab
+            document.getElementById(tabId).style.display = 'block';
+        }
+    </script>
 </body>
 </html>
