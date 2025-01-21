@@ -1,0 +1,5 @@
+# Ignore the credentials folder
+credentials/
+
+# Or, if the credentials file is in the root directory:
+# credentials.json
