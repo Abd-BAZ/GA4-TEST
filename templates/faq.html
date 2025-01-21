@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - GA-4 Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('faq') }}">FAQ</a>
+    </div>
+
+    <!-- FAQ Dashboard -->
+    <div class="container">
+        <h1>FAQ - Download Files</h1>
+        <div class="file-dashboard">
+            <ul>
+                <li><a href="{{ url_for('static', filename='files/01 OCP_CM_ES_Registering a Business Name_UG v2.0.pdf') }}" download>01 OCP_CM_ES_Registering a Business Name_UG v2.0</a></li>
+                <li><a href="{{ url_for('static', filename='files/02 OCP_CM_ES_Returned Business Name_UG v1.0.pdf') }}" download>02 OCP_CM_ES_Returned Business Name_UG v1.0</a></li>
+                <li><a href="{{ url_for('static', filename='files/03 OCP_CM_ES_Rejected Business Name_UG v1.0.pdf') }}" download>03 OCP_CM_ES_Rejected Business Name_UG v1.0</a></li>
+                <li><a href="{{ url_for('static', filename='files/04 OCP_CM_ES_Viewing Approved Business Name_UG v1.0.pdf') }}" download>04 OCP_CM_ES_Viewing Approved Business Name_UG v1.0</a></li>
+                <li><a href="{{ url_for('static', filename='files/05 OCP_CM_ES_Changing Business Name Details_UG v0.2.pdf') }}" download>05 OCP_CM_ES_Changing Business Name Details_UG v0.2</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

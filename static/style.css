@@ -1,0 +1,75 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.container {
+    text-align: center;
+    margin-top: 20%;
+}
+
+h1 {
+    color: #5a67d8;
+}
+
+/* Navigation Bar */
+.navbar {
+    display: flex;
+    justify-content: center;
+    background-color: #333;
+    padding: 1rem;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1.2rem;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+    color: #f4f4f9;
+}
+
+/* FAQ Dashboard */
+.file-dashboard {
+    margin-top: 20px;
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.file-dashboard ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.file-dashboard li {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.file-dashboard a {
+    text-decoration: none;
+    color: #5a67d8;
+    font-weight: bold;
+    display: inline-block;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+.file-dashboard a:hover {
+    text-decoration: underline;
+    color: #fff;
+    background-color: #5a67d8;
+    border-color: #5a67d8;
+}

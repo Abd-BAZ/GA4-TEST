@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GA-4 Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('faq') }}">FAQ</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Welcome to GA-4!</h1>
+        <p>This is a simple Flask website.</p>
+        <p>Click here to download our PDF file:</p>
+        <a href="{{ url_for('static', filename='files/Permohonan Data Bagi Pekerja Sambilan Di Universiti Brunei Darussalam (UBD).pdf') }}" 
+           download="GA4-Sample.pdf">
+           Download
+        </a>
+    </div>
+</body>
+</html>
