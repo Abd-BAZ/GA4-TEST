@@ -7,21 +7,40 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FP2VEQZF5N"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-FP2VEQZF5N');
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FP2VEQZF5N"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-FP2VEQZF5N');
+    </script>
+
+    <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PRN846G6');
 </script>
+    <!-- End Google Tag Manager -->
 
 </head>
 <body>
+
+    <!-- Google Tag Manager (noscript) -->
+<noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PRN846G6"
+    height="0" width="0" style="display:none;visibility:hidden">
+    </iframe>
+</noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     <!-- Navigation Bar -->
     <div class="navbar">
         <a href="{{ url_for('index') }}">Home</a>
         <a href="{{ url_for('about') }}">About</a>
         <a href="{{ url_for('faq') }}">FAQ</a>
+        <a href="{{ url_for('live_stats') }}">Live Stats</a>
     </div>
 
     <!-- Main Content -->

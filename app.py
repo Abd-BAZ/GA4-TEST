@@ -2,14 +2,14 @@ from flask import Flask, render_template, jsonify
 from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
-from google.analytics.data_v1beta.types import RunReportRequest
+from google.analytics.data_v1beta.types import RunReportRequest, DateRange
 
 app = Flask(__name__)
 
 # Function to initialize Google Analytics Data API client
 def initialize_analytics_reporting():
     # Define the path to your service account credentials file
-    credentials_path = "credentials/credentials.json"  # Update this with the path to your credentials file
+    credentials_path = "credentials/ga-4-website-448507-3efe2dc5a106.json"
     
     # Define the required scopes for accessing the Google Analytics API
     SCOPES = ['https://www.googleapis.com/auth/analytics.readonly']
@@ -25,14 +25,14 @@ def initialize_analytics_reporting():
 
 # Function to fetch GA-4 data (example: users by date)
 def fetch_ga4_data(client):
-    
     property_id = '473956527'  
 
     # Set up the query request (example: users by date)
     request = RunReportRequest(
         property=f"properties/{property_id}",
         dimensions=[{'name': 'date'}],
-        metrics=[{'name': 'activeUsers'}]
+        metrics=[{'name': 'activeUsers'}],
+        date_ranges=[DateRange(start_date="7daysAgo", end_date="today")]  # Specify the date range
     )
 
     # Run the query
@@ -62,17 +62,22 @@ def about():
 def faq():
     return render_template("faq.html")
 
-# New route to fetch and display GA-4 data
-@app.route("/ga4-data")
-def ga4_data():
+# Route to fetch GA-4 data
+@app.route("/ga4-data-json")
+def ga4_data_json():
     # Initialize the GA-4 client
     client = initialize_analytics_reporting()
 
     # Fetch the GA-4 data
     data = fetch_ga4_data(client)
 
-    # Return the data as JSON (for simplicity)
+    # Return the data as JSON
     return jsonify(data)
+
+# Route for the live statistics page
+@app.route("/live-stats")
+def live_stats():
+    return render_template("live_stats.html")
 
 # Run the Flask app
 if __name__ == "__main__":
