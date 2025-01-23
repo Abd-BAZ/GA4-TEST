@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify
-from google.auth.transport.requests import Request
+import os
+import json
 from google.oauth2 import service_account
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import RunReportRequest, DateRange
@@ -8,24 +9,24 @@ app = Flask(__name__)
 
 # Function to initialize Google Analytics Data API client
 def initialize_analytics_reporting():
-    # Define the path to your service account credentials file
-    credentials_path = "credentials/ga-4-website-448507-3efe2dc5a106.json"
+    # Get the credentials JSON from the environment variable
+    credentials_json = os.getenv("GA4_CREDENTIAL_JSON")
+    if not credentials_json:
+        raise Exception("GA4_CREDENTIAL_JSON environment variable not set!")
     
-    # Define the required scopes for accessing the Google Analytics API
-    SCOPES = ['https://www.googleapis.com/auth/analytics.readonly']
-
-    # Authenticate and create a client using the service account
-    credentials = service_account.Credentials.from_service_account_file(
-        credentials_path, scopes=SCOPES)
+    # Load credentials from the JSON string
+    credentials = service_account.Credentials.from_service_account_info(
+        json.loads(credentials_json),
+        scopes=['https://www.googleapis.com/auth/analytics.readonly']
+    )
     
     # Initialize the Analytics Data API client
     client = BetaAnalyticsDataClient(credentials=credentials)
-    
     return client
 
 # Function to fetch GA-4 data (example: users by date)
 def fetch_ga4_data(client):
-    property_id = '473956527'  
+    property_id = '473956527'  # Replace with your Google Analytics Property ID
 
     # Set up the query request (example: users by date)
     request = RunReportRequest(
