@@ -110,3 +110,28 @@ h1 {
     border-radius: 4px;
     background-color: #f9f9f9;
 }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+}
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+}
+table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+table tr:hover {
+    background-color: #f1f1f1;
+}
+.highlight {
+    font-weight: bold;
+    color: #ff5722;
+}
