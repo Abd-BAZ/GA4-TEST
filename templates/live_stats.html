@@ -54,13 +54,16 @@
                 const statsTable = document.getElementById("stats-table").querySelector("tbody");
                 statsTable.innerHTML = ""; // Clear existing data
 
-                // Populate the table with new data
+                // Populate the table with new data and add dynamic CSS classes
                 data.forEach(stat => {
+                    const activeUsersClass = stat.activeUsers > 50 ? "highlight-high" : "highlight-low"; // Example threshold
+                    const pageViewsClass = stat.pageViews > 100 ? "highlight-views" : ""; // Example threshold
+
                     const row = `<tr>
                         <td>${stat.date}</td>
                         <td>${stat.pagePath}</td>
-                        <td>${stat.activeUsers}</td>
-                        <td>${stat.pageViews}</td>
+                        <td class="${activeUsersClass}">${stat.activeUsers}</td>
+                        <td class="${pageViewsClass}">${stat.pageViews}</td>
                         <td>${stat.eventCount}</td>
                     </tr>`;
                     statsTable.innerHTML += row;

@@ -135,3 +135,19 @@ table tr:hover {
     font-weight: bold;
     color: #ff5722;
 }
+/* Highlight rows with high or low active users */
+.highlight-high {
+    font-weight: bold;
+    color: #4CAF50; /* Green for high active users */
+}
+
+.highlight-low {
+    font-weight: bold;
+    color: #FF5722; /* Orange for low active users */
+}
+
+/* Highlight rows with high page views */
+.highlight-views {
+    font-weight: bold;
+    background-color: #FFEB3B; /* Yellow background for high page views */
+}
