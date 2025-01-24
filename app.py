@@ -13,27 +13,34 @@ def initialize_analytics_reporting():
     credentials_json = os.getenv("GA4_CREDENTIAL_JSON")
     if not credentials_json:
         raise Exception("GA4_CREDENTIAL_JSON environment variable not set!")
-    
+
     # Load credentials from the JSON string
     credentials = service_account.Credentials.from_service_account_info(
         json.loads(credentials_json),
         scopes=['https://www.googleapis.com/auth/analytics.readonly']
     )
-    
+
     # Initialize the Analytics Data API client
     client = BetaAnalyticsDataClient(credentials=credentials)
     return client
 
-# Function to fetch GA-4 data (example: users by date)
+# Function to fetch GA-4 data
 def fetch_ga4_data(client):
     property_id = '473956527'  # Replace with your Google Analytics Property ID
 
-    # Set up the query request (example: users by date)
+    # Set up the query request
     request = RunReportRequest(
         property=f"properties/{property_id}",
-        dimensions=[{'name': 'date'}],
-        metrics=[{'name': 'activeUsers'}],
-        date_ranges=[DateRange(start_date="7daysAgo", end_date="today")]  # Specify the date range
+        dimensions=[
+            {'name': 'date'},       # Date of activity
+            {'name': 'pagePath'}   # Tracks activity per page
+        ],
+        metrics=[
+            {'name': 'activeUsers'},       # Active users
+            {'name': 'screenPageViews'},  # Total page views
+            {'name': 'eventCount'}        # Total events (e.g., downloads)
+        ],
+        date_ranges=[DateRange(start_date="7daysAgo", end_date="today")]  # Adjust date range as needed
     )
 
     # Run the query
@@ -43,8 +50,11 @@ def fetch_ga4_data(client):
     report_data = []
     for row in response.rows:
         data = {
-            "date": row.dimension_values[0].value,
-            "activeUsers": row.metric_values[0].value
+            "date": row.dimension_values[0].value,  # Date
+            "pagePath": row.dimension_values[1].value,  # Page path
+            "activeUsers": row.metric_values[0].value,  # Active users
+            "pageViews": row.metric_values[1].value,   # Page views
+            "eventCount": row.metric_values[2].value  # Events (e.g., downloads)
         }
         report_data.append(data)
 

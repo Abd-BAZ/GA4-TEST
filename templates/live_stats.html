@@ -32,7 +32,10 @@
             <thead>
                 <tr>
                     <th>Date</th>
+                    <th>Page Path</th>
                     <th>Active Users</th>
+                    <th>Page Views</th>
+                    <th>Event Count</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,14 +58,17 @@
                 data.forEach(stat => {
                     const row = `<tr>
                         <td>${stat.date}</td>
+                        <td>${stat.pagePath}</td>
                         <td>${stat.activeUsers}</td>
+                        <td>${stat.pageViews}</td>
+                        <td>${stat.eventCount}</td>
                     </tr>`;
                     statsTable.innerHTML += row;
                 });
             } catch (error) {
                 console.error("Error fetching GA-4 data:", error);
                 const statsTable = document.getElementById("stats-table").querySelector("tbody");
-                statsTable.innerHTML = `<tr><td colspan="2" style="color: red;">Error loading data.</td></tr>`;
+                statsTable.innerHTML = `<tr><td colspan="5" style="color: red;">Error loading data.</td></tr>`;
             }
         }
 
