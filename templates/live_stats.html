@@ -28,6 +28,12 @@
     <div class="container">
         <h1>Live GA-4 Statistics</h1>
         <p>Below are the live user statistics from Google Analytics 4.</p>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search by Page Path..." onkeyup="filterTable()">
+        </div>
+
         <table id="stats-table">
             <thead>
                 <tr>
@@ -77,6 +83,21 @@
 
         // Call the function to fetch GA-4 data on page load
         fetchGA4Data();
+
+        // Filter table based on search input
+        function filterTable() {
+            const searchInput = document.getElementById("search-input").value.toLowerCase();
+            const tableRows = document.querySelectorAll("#stats-table tbody tr");
+
+            tableRows.forEach(row => {
+                const pagePath = row.cells[1].textContent.toLowerCase(); // Page Path is in the 2nd column
+                if (pagePath.includes(searchInput)) {
+                    row.style.display = ""; // Show row
+                } else {
+                    row.style.display = "none"; // Hide row
+                }
+            });
+        }
     </script>
 </body>
 </html>
