@@ -24,15 +24,23 @@
         <a href="{{ url_for('live_stats') }}" class="active">Live Stats</a>
     </div>
 
-    <!-- GA-4 Live Stats Section -->
-    <div class="container">
-        <h1>Live GA-4 Statistics</h1>
-        <p>Below are the live user statistics from Google Analytics 4.</p>
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="container">
+        <h1>GA-4 Dashboard</h1>
+        <p>Click on a box below to view live statistics.</p>
 
-        <!-- Search Bar -->
-        <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Search by Page Path..." onkeyup="filterTable()">
+        <div class="dashboard-boxes">
+            <div class="box" onclick="loadStats('home')">Home Stats</div>
+            <div class="box" onclick="loadStats('about')">About Stats</div>
+            <div class="box" onclick="loadStats('faq')">FAQ Stats</div>
         </div>
+    </div>
+
+    <!-- Stats Section (Hidden by Default) -->
+    <div id="stats-section" class="container" style="display: none;">
+        <button onclick="backToDashboard()">Back to Dashboard</button>
+        <h1 id="stats-title"></h1>
+        <p>Below are the live user statistics for the selected section.</p>
 
         <table id="stats-table">
             <thead>
@@ -51,29 +59,35 @@
     </div>
 
     <script>
-        // Fetch GA-4 data from the backend
-        async function fetchGA4Data() {
+        // Load stats based on the selected section
+        async function loadStats(section) {
+            // Update the stats title
+            const statsTitle = document.getElementById("stats-title");
+            statsTitle.textContent = `${section.charAt(0).toUpperCase() + section.slice(1)} Stats`;
+
+            // Fetch the relevant data from the backend
             try {
-                const response = await fetch("/ga4-data-json");
+                const response = await fetch(`/ga4-data-${section}`);
                 const data = await response.json();
 
+                // Populate the table with data
                 const statsTable = document.getElementById("stats-table").querySelector("tbody");
                 statsTable.innerHTML = ""; // Clear existing data
 
-                // Populate the table with new data and add dynamic CSS classes
                 data.forEach(stat => {
-                    const activeUsersClass = stat.activeUsers > 50 ? "highlight-high" : "highlight-low"; // Example threshold
-                    const pageViewsClass = stat.pageViews > 100 ? "highlight-views" : ""; // Example threshold
-
                     const row = `<tr>
                         <td>${stat.date}</td>
                         <td>${stat.pagePath}</td>
-                        <td class="${activeUsersClass}">${stat.activeUsers}</td>
-                        <td class="${pageViewsClass}">${stat.pageViews}</td>
+                        <td>${stat.activeUsers}</td>
+                        <td>${stat.pageViews}</td>
                         <td>${stat.eventCount}</td>
                     </tr>`;
                     statsTable.innerHTML += row;
                 });
+
+                // Show the stats section and hide the dashboard
+                document.getElementById("dashboard").style.display = "none";
+                document.getElementById("stats-section").style.display = "block";
             } catch (error) {
                 console.error("Error fetching GA-4 data:", error);
                 const statsTable = document.getElementById("stats-table").querySelector("tbody");
@@ -81,22 +95,10 @@
             }
         }
 
-        // Call the function to fetch GA-4 data on page load
-        fetchGA4Data();
-
-        // Filter table based on search input
-        function filterTable() {
-            const searchInput = document.getElementById("search-input").value.toLowerCase();
-            const tableRows = document.querySelectorAll("#stats-table tbody tr");
-
-            tableRows.forEach(row => {
-                const pagePath = row.cells[1].textContent.toLowerCase(); // Page Path is in the 2nd column
-                if (pagePath.includes(searchInput)) {
-                    row.style.display = ""; // Show row
-                } else {
-                    row.style.display = "none"; // Hide row
-                }
-            });
+        // Go back to the dashboard
+        function backToDashboard() {
+            document.getElementById("dashboard").style.display = "block";
+            document.getElementById("stats-section").style.display = "none";
         }
     </script>
 </body>

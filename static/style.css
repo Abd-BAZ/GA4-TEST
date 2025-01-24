@@ -12,8 +12,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Full viewport height for vertical centering */
-    text-align: center; 
+    height: 100vh;
+    text-align: center;
 }
 
 h1 {
@@ -33,19 +33,21 @@ h1 {
     text-decoration: none;
     margin: 0 15px;
     font-size: 1.2rem;
+    transition: color 0.3s ease;
 }
 
-.navbar a:hover {
+.navbar a:hover, .navbar a:focus {
     text-decoration: underline;
     color: #f4f4f9;
 }
 
-/* FAQ Dashboard */
+/* File Dashboard */
 .file-dashboard {
     margin-top: 20px;
     text-align: left;
     max-width: 800px;
     margin: 0 auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .file-dashboard ul {
@@ -68,7 +70,7 @@ h1 {
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #f9f9f9;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .file-dashboard a:hover {
@@ -76,9 +78,10 @@ h1 {
     color: #fff;
     background-color: #5a67d8;
     border-color: #5a67d8;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Internal Tabs */
+/* Tabs */
 .internal-tabs {
     margin-top: 20px;
     text-align: center;
@@ -93,11 +96,12 @@ h1 {
     font-size: 16px;
     cursor: pointer;
     border-radius: 4px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.tab-button:hover {
+.tab-button:hover, .tab-button:focus {
     background-color: #434fa7;
+    transform: scale(1.05);
 }
 
 .tab-content {
@@ -109,7 +113,10 @@ h1 {
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+/* Tables */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -117,40 +124,48 @@ table {
     font-size: 18px;
     text-align: left;
 }
+
 table th, table td {
     border: 1px solid #ddd;
     padding: 12px 15px;
 }
+
 table th {
     background-color: #f4f4f4;
     font-weight: bold;
 }
+
 table tr:nth-child(even) {
     background-color: #f9f9f9;
 }
+
 table tr:hover {
     background-color: #f1f1f1;
+    transition: background-color 0.2s ease;
 }
+
+/* Highlight rows */
 .highlight {
     font-weight: bold;
     color: #ff5722;
 }
-/* Highlight rows with high or low active users */
+
 .highlight-high {
     font-weight: bold;
-    color: #4CAF50; /* Green for high active users */
+    color: #4CAF50;
 }
 
 .highlight-low {
     font-weight: bold;
-    color: #FF5722; /* Orange for low active users */
+    color: #FF5722;
 }
 
-/* Highlight rows with high page views */
 .highlight-views {
     font-weight: bold;
-    background-color: #FFEB3B; /* Yellow background for high page views */
+    background-color: #FFEB3B;
 }
+
+/* Search Bar */
 .search-bar {
     margin-bottom: 20px;
 }
@@ -161,4 +176,22 @@ table tr:hover {
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+#search-input:focus {
+    border-color: #5a67d8;
+    outline: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .file-dashboard, .tab-content {
+        width: 95%;
+    }
+
+    .tab-button {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
 }
