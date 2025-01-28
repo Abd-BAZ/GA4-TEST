@@ -104,7 +104,7 @@ def ga4_data_section(section):
     try:
         # Map section to corresponding page paths in GA4
         page_paths = {
-            "home": "/home",
+            "home": "/",
             "about": "/about",
             "faq": "/faq"
         }
