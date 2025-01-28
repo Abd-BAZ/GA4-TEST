@@ -104,9 +104,9 @@ def ga4_data_section(section):
     try:
         # Map section to corresponding page paths in GA4
         page_paths = {
-            "home": ["/", ""],
-            "about": ["/about"],
-            "faq": ["/faq"]
+            "home": "",
+            "about": "/about",
+            "faq": "/faq"
         }
         if section not in page_paths:
             return jsonify({"error": "Invalid section specified"}), 400
