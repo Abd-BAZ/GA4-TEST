@@ -50,6 +50,7 @@
                     <th>Active Users</th>
                     <th>Page Views</th>
                     <th>Event Count</th>
+                    <th>Unique Visits</th>
                 </tr>
             </thead>
             <tbody>
@@ -81,6 +82,7 @@
                         <td>${stat.activeUsers}</td>
                         <td>${stat.pageViews}</td>
                         <td>${stat.eventCount}</td>
+                        <td>${stat.firstUsers}</td> <!-- New Data -->
                     </tr>`;
                     statsTable.innerHTML += row;
                 });
