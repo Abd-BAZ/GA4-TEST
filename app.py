@@ -33,8 +33,8 @@ def initialize_analytics_reporting():
         logging.error(f"Error initializing GA client: {e}")
         raise
 
-# Function to fetch GA-4 data
-def fetch_ga4_data(client, property_id):
+# Function to fetch GA-4 data for a specific page
+def fetch_ga4_data(client, property_id, page_path):
     try:
         # Set up the query request
         request = RunReportRequest(
@@ -48,7 +48,16 @@ def fetch_ga4_data(client, property_id):
                 {'name': 'screenPageViews'},  # Total page views
                 {'name': 'eventCount'}        # Total events (e.g., downloads)
             ],
-            date_ranges=[DateRange(start_date="7daysAgo", end_date="today")]  # Adjust date range as needed
+            date_ranges=[DateRange(start_date="7daysAgo", end_date="today")],  # Adjust date range as needed
+            dimension_filter={
+                'filter': {
+                    'field_name': 'pagePath',
+                    'string_filter': {
+                        'match_type': 'EXACT',
+                        'value': page_path
+                    }
+                }
+            }
         )
 
         # Run the query
@@ -66,80 +75,55 @@ def fetch_ga4_data(client, property_id):
             }
             report_data.append(data)
 
-        logging.info("GA-4 data fetched successfully.")
+        logging.info(f"GA-4 data fetched successfully for page: {page_path}")
         return report_data
     except Exception as e:
-        logging.error(f"Error fetching GA-4 data: {e}")
+        logging.error(f"Error fetching GA-4 data for page {page_path}: {e}")
         return []
 
-# Routes for your existing pages
-# Add these routes to fetch GA4 data for Home, About, and FAQ pages
-@app.route("/ga4-data-home")
-def ga4_data_home():
-    return fetch_ga4_data_for_page("/home")
+# Routes for static pages
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-@app.route("/ga4-data-about")
-def ga4_data_about():
-    return fetch_ga4_data_for_page("/about")
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
-@app.route("/ga4-data-faq")
-def ga4_data_faq():
-    return fetch_ga4_data_for_page("/faq")
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
 
+@app.route("/live-stats")
+def live_stats():
+    return render_template("live_stats.html")
 
-# Helper function to fetch data for a specific page
-def fetch_ga4_data_for_page(page_path):
+# Routes for dynamic GA4 data fetching
+@app.route("/ga4-data-<section>")
+def ga4_data_section(section):
     try:
+        # Map section to corresponding page paths in GA4
+        page_paths = {
+            "home": "/home",
+            "about": "/about",
+            "faq": "/faq"
+        }
+        if section not in page_paths:
+            return jsonify({"error": "Invalid section specified"}), 400
+
         # Initialize the GA-4 client
         client = initialize_analytics_reporting()
 
-        # Fetch the GA-4 data
-        property_id = os.getenv("GA4_PROPERTY_ID", "473956527")  # Replace with your property ID
-        data = fetch_ga4_data(client, property_id, page_path)
+        # Fetch GA-4 data for the specific page
+        property_id = os.getenv("GA4_PROPERTY_ID", "473956527")  # Use environment variable or default
+        data = fetch_ga4_data(client, property_id, page_paths[section])
 
         # Return the data as JSON
         return jsonify(data)
     except Exception as e:
-        logging.error(f"Error fetching data for {page_path}: {e}")
+        logging.error(f"Error in /ga4-data-{section} route: {e}")
         return jsonify({"error": "Failed to fetch GA-4 data"}), 500
 
-
-# Update the fetch_ga4_data function to accept a page_path parameter
-def fetch_ga4_data(client, property_id, page_path):
-    try:
-        request = RunReportRequest(
-            property=f"properties/{property_id}",
-            dimensions=[
-                {'name': 'date'},
-                {'name': 'pagePath'}
-            ],
-            metrics=[
-                {'name': 'activeUsers'},
-                {'name': 'screenPageViews'},
-                {'name': 'eventCount'}
-            ],
-            dimension_filter={
-                "filter": {
-                    "field_name": "pagePath",
-                    "string_filter": {"value": page_path}
-                }
-            },
-            date_ranges=[DateRange(start_date="7daysAgo", end_date="today")]
-        )
-
-        response = client.run_report(request)
-
-        report_data = [
-            {
-                "date": row.dimension_values[0].value,
-                "pagePath": row.dimension_values[1].value,
-                "activeUsers": int(row.metric_values[0].value),
-                "pageViews": int(row.metric_values[1].value),
-                "eventCount": int(row.metric_values[2].value),
-            }
-            for row in response.rows
-        ]
-        return report_data
-    except Exception as e:
-        logging.error(f"Error fetching GA4 data: {e}")
-        return []
+# Run the Flask app
+if __name__ == "__main__":
+    app.run(debug=True)
