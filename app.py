@@ -47,7 +47,7 @@ def fetch_ga4_data(client, property_id, page_path):
                 {'name': 'activeUsers'},       # Active users
                 {'name': 'screenPageViews'},  # Total page views
                 {'name': 'eventCount'},       # Total events (e.g., downloads)
-                {'name': 'firstTimeUsers'} #Unique visits
+                {'name': 'firstTimeUsers'}    # Unique visits
             ],
             date_ranges=[DateRange(start_date="7daysAgo", end_date="today")],  # Adjust date range as needed
             dimension_filter={
@@ -73,7 +73,7 @@ def fetch_ga4_data(client, property_id, page_path):
                 "activeUsers": int(row.metric_values[0].value),  # Active users
                 "pageViews": int(row.metric_values[1].value),   # Page views
                 "eventCount": int(row.metric_values[2].value),  # Events (e.g., downloads)
-                "firstUsers": int(row.metrics_values[3].value)
+                "firstUsers": int(row.metric_values[3].value)   # Unique visits
             }
             report_data.append(data)
 
@@ -106,7 +106,7 @@ def ga4_data_section(section):
     try:
         # Map section to corresponding page paths in GA4
         page_paths = {
-            "home": "",
+            "home": "/",
             "about": "/about",
             "faq": "/faq"
         }
