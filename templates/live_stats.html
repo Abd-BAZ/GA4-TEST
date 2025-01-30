@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GA-4 Live Statistics</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FP2VEQZF5N"></script>
     <script>
@@ -27,22 +26,82 @@
     <!-- Dashboard Section -->
     <div id="dashboard" class="container">
         <h1>GA-4 Dashboard</h1>
-        <p>Click on a box below to view live statistics.</p>
+        <p>Click on a section below to view summarized statistics.</p>
 
         <div class="dashboard-boxes">
-            <div class="box" onclick="loadStats('home')">Home Stats</div>
-            <div class="box" onclick="loadStats('about')">About Stats</div>
-            <div class="box" onclick="loadStats('faq')">FAQ Stats</div>
+            <div class="box" onclick="loadSummary('home')">Home Stats</div>
+            <div class="box" onclick="loadSummary('about')">About Stats</div>
+            <div class="box" onclick="loadSummary('faq')">FAQ Stats</div>
         </div>
     </div>
 
-    <!-- Stats Section (Hidden by Default) -->
-    <div id="stats-section" class="container" style="display: none;">
+    <!-- Summary Section (Hidden by Default) -->
+    <div id="summary-section" class="container" style="display: none;">
         <button class="back-button" onclick="backToDashboard()">← Back to Dashboard</button>
-        <h1 id="stats-title"></h1>
-        <p>Below are the live user statistics for the selected section.</p>
+        <h1 id="summary-title"></h1>
+        <p>Below are the summarized user statistics for the selected section.</p>
 
-        <table id="stats-table">
+        <!-- Tabs for Daily, Monthly, Yearly -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('daily')">Daily</button>
+            <button class="tab-button" onclick="showTab('monthly')">Monthly</button>
+            <button class="tab-button" onclick="showTab('yearly')">Yearly</button>
+        </div>
+
+        <!-- Summary Tables -->
+        <div id="daily-table" class="summary-table">
+            <h2>Daily Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically injected here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="monthly-table" class="summary-table" style="display: none;">
+            <h2>Monthly Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically injected here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="yearly-table" class="summary-table" style="display: none;">
+            <h2>Yearly Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Detailed Breakdown Section (Hidden by Default) -->
+    <div id="details-section" class="container" style="display: none;">
+        <button class="back-button" onclick="backToSummary()">← Back to Summary</button>
+        <h1 id="details-title"></h1>
+        <p>Below are the detailed user statistics for the selected metric.</p>
+
+        <table id="details-table">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -60,44 +119,90 @@
     </div>
 
     <script>
-        // Load stats based on the selected section
-        async function loadStats(section) {
-    try {
-        const response = await fetch(`/ga4-data-${section}`);
-        if (!response.ok) throw new Error("Failed to fetch GA-4 data.");
-        const data = await response.json();
+        let currentSection = "";
+        let currentSummaryData = {};
 
-        // Populate the table with data
-        const statsTableBody = document.getElementById("stats-table").querySelector("tbody");
-        statsTableBody.innerHTML = ""; // Clear existing data
+        // Load summarized data for the selected section
+        async function loadSummary(section) {
+            currentSection = section;
 
-        if (data.length === 0) {
-            statsTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No data available.</td></tr>`;
-        } else {
-            data.forEach(stat => {
-                const row = `<tr>
-                    <td>${stat.date}</td>
-                    <td>${stat.pagePath}</td>
-                    <td>${stat.browser}</td>
-                    <td>${stat.activeUsers}</td>
-                    <td>${stat.pageViews}</td>
-                    <td>${stat.eventCount}</td>
-                </tr>`;
-                statsTableBody.innerHTML += row;
+            // Update the summary title
+            const summaryTitle = document.getElementById("summary-title");
+            summaryTitle.textContent = `${section.charAt(0).toUpperCase() + section.slice(1)} Stats`;
+
+            // Fetch the summarized data from the backend
+            try {
+                const response = await fetch(`/ga4-summary-${section}`);
+                if (!response.ok) throw new Error("Failed to fetch GA-4 summary data.");
+                const data = await response.json();
+                currentSummaryData = data;
+
+                // Populate the summary tables
+                populateSummaryTable("daily", data.daily);
+                populateSummaryTable("monthly", data.monthly);
+                populateSummaryTable("yearly", data.yearly);
+
+                // Show the summary section and hide the dashboard
+                document.getElementById("dashboard").style.display = "none";
+                document.getElementById("summary-section").style.display = "block";
+                showTab("daily"); // Show the daily tab by default
+            } catch (error) {
+                console.error("Error fetching GA-4 summary data:", error);
+
+                // Show an error message in the summary tables
+                const tables = document.querySelectorAll(".summary-table tbody");
+                tables.forEach(table => {
+                    table.innerHTML = `<tr><td colspan="2" style="color: red; text-align: center;">Error loading data. Please try again later.</td></tr>`;
+                });
+            }
+        }
+
+        // Populate a summary table with data
+        function populateSummaryTable(tab, data) {
+            const tableBody = document.getElementById(`${tab}-table`).querySelector("tbody");
+            tableBody.innerHTML = `
+                <tr>
+                    <td>Active Users</td>
+                    <td>${data.activeUsers}</td>
+                </tr>
+                <tr>
+                    <td>Page Views</td>
+                    <td>${data.pageViews}</td>
+                </tr>
+                <tr>
+                    <td>Event Count</td>
+                    <td>${data.eventCount}</td>
+                </tr>
+            `;
+        }
+
+        // Show the selected tab and hide others
+        function showTab(tab) {
+            const tabs = ["daily", "monthly", "yearly"];
+            tabs.forEach(t => {
+                const table = document.getElementById(`${t}-table`);
+                const button = document.querySelector(`.tab-button[onclick="showTab('${t}')"]`);
+                if (t === tab) {
+                    table.style.display = "block";
+                    button.classList.add("active");
+                } else {
+                    table.style.display = "none";
+                    button.classList.remove("active");
+                }
             });
         }
 
-        // Show the stats section and hide the dashboard
-        document.getElementById("dashboard").style.display = "none";
-        document.getElementById("stats-section").style.display = "block";
-    } catch (error) {
-        console.error("Error fetching GA-4 data:", error);
+        // Go back to the dashboard
+        function backToDashboard() {
+            document.getElementById("dashboard").style.display = "block";
+            document.getElementById("summary-section").style.display = "none";
+        }
 
-        // Show an error message in the stats table
-        const statsTableBody = document.getElementById("stats-table").querySelector("tbody");
-        statsTableBody.innerHTML = `<tr><td colspan="6" style="color: red; text-align: center;">Error loading data. Please try again later.</td></tr>`;
-    }
-}
+        // Go back to the summary section
+        function backToSummary() {
+            document.getElementById("summary-section").style.display = "block";
+            document.getElementById("details-section").style.display = "none";
+        }
     </script>
 </body>
 </html>

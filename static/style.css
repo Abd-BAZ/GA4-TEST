@@ -96,34 +96,46 @@ h1 {
     text-align: center;
 }
 
+/* Add this to your style.css */
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+
 .tab-button {
-    background-color: #5a67d8;
-    color: white;
-    border: none;
     padding: 10px 20px;
-    margin: 5px;
-    font-size: 16px;
     cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.tab-button:hover,
-.tab-button:focus {
-    background-color: #434fa7;
-    transform: scale(1.05);
-}
-
-.tab-content {
-    margin-top: 20px;
-    text-align: left;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 15px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    background-color: #f4f4f4;
+    margin-right: 10px;
+}
+
+.tab-button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.summary-table {
+    margin-top: 20px;
+}
+
+.summary-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.summary-table th, .summary-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.summary-table th {
+    background-color: #f4f4f4;
+}
+
+.summary-table tr:hover {
     background-color: #f9f9f9;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Dashboard Boxes */

@@ -101,8 +101,8 @@ def live_stats():
     return render_template("live_stats.html")
 
 # Routes for dynamic GA4 data fetching
-@app.route("/ga4-data-<section>")
-def ga4_data_section(section):
+@app.route("/ga4-summary-<section>")
+def ga4_summary_section(section):
     try:
         # Map section to corresponding page paths in GA4
         page_paths = {
@@ -116,15 +116,37 @@ def ga4_data_section(section):
         # Initialize the GA-4 client
         client = initialize_analytics_reporting()
 
-        # Fetch GA-4 data for the specific page
+        # Fetch summarized data for daily, monthly, and yearly views
         property_id = os.getenv("GA4_PROPERTY_ID", "473956527")  # Use environment variable or default
-        data = fetch_ga4_data(client, property_id, page_paths[section])
 
-        # Return the data as JSON
-        return jsonify(data)
+        # Daily data
+        daily_data = fetch_ga4_data(client, property_id, page_paths[section], "7daysAgo", "today")
+
+        # Monthly data (last 30 days)
+        monthly_data = fetch_ga4_data(client, property_id, page_paths[section], "30daysAgo", "today")
+
+        # Yearly data (last 365 days)
+        yearly_data = fetch_ga4_data(client, property_id, page_paths[section], "365daysAgo", "today")
+
+        # Summarize the data
+        def summarize(data):
+            return {
+                "activeUsers": sum(stat["activeUsers"] for stat in data),
+                "pageViews": sum(stat["pageViews"] for stat in data),
+                "eventCount": sum(stat["eventCount"] for stat in data)
+            }
+
+        summary = {
+            "daily": summarize(daily_data),
+            "monthly": summarize(monthly_data),
+            "yearly": summarize(yearly_data)
+        }
+
+        # Return the summarized data as JSON
+        return jsonify(summary)
     except Exception as e:
-        logging.error(f"Error in /ga4-data-{section} route: {e}")
-        return jsonify({"error": "Failed to fetch GA-4 data"}), 500
+        logging.error(f"Error in /ga4-summary-{section} route: {e}")
+        return jsonify({"error": "Failed to fetch GA-4 summary data"}), 500
 
 # Run the Flask app
 if __name__ == "__main__":
