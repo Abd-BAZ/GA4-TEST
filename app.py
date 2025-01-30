@@ -41,13 +41,13 @@ def fetch_ga4_data(client, property_id, page_path):
             property=f"properties/{property_id}",
             dimensions=[
                 {'name': 'date'},       # Date of activity
-                {'name': 'pagePath'}   # Tracks activity per page
+                {'name': 'pagePath'},   # Tracks activity per page
+                {'name': 'browser'}     # Browser used by users
             ],
             metrics=[
                 {'name': 'activeUsers'},       # Active users
                 {'name': 'screenPageViews'},  # Total page views
-                {'name': 'eventCount'},       # Total events (e.g., downloads)
-                {'name': 'firstTimeUsers'}    # Unique visits
+                {'name': 'eventCount'}        # Total events (e.g., downloads)
             ],
             date_ranges=[DateRange(start_date="7daysAgo", end_date="today")],  # Adjust date range as needed
             dimension_filter={
@@ -70,10 +70,10 @@ def fetch_ga4_data(client, property_id, page_path):
             data = {
                 "date": row.dimension_values[0].value,  # Date
                 "pagePath": row.dimension_values[1].value,  # Page path
+                "browser": row.dimension_values[2].value,  # Browser
                 "activeUsers": int(row.metric_values[0].value),  # Active users
                 "pageViews": int(row.metric_values[1].value),   # Page views
-                "eventCount": int(row.metric_values[2].value),  # Events (e.g., downloads)
-                "firstUsers": int(row.metric_values[3].value)   # Unique visits
+                "eventCount": int(row.metric_values[2].value)   # Events (e.g., downloads)
             }
             report_data.append(data)
 
