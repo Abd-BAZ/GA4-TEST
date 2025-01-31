@@ -152,14 +152,14 @@ def ga4_summary_section(section):
                 "eventCount": sum(stat["eventCount"] for stat in data)
             }
 
-        data = {
+        summary = {
             "daily": summarize(daily_data),
             "monthly": summarize(monthly_data),
             "yearly": summarize(yearly_data)
         }
 
         # Return the summarized data as JSON
-        return jsonify(data)
+        return jsonify(summary)
     except Exception as e:
         logging.error(f"Error in /ga4-summary-{section} route: {e}")
         return jsonify({"error": f"Failed to fetch GA-4 summary data: {str(e)}"}), 500
