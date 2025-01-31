@@ -5,11 +5,20 @@ import logging
 from google.oauth2 import service_account
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import RunReportRequest, DateRange
+from flask_caching import Cache
 
 app = Flask(__name__)
 
+# Configure caching
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})  # 5 minutes
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
+
+# Validate environment variables
+if not os.getenv("GA4_CREDENTIAL_JSON") or not os.getenv("GA4_PROPERTY_ID"):
+    logging.error("Required environment variables (GA4_CREDENTIAL_JSON, GA4_PROPERTY_ID) are not set!")
+    exit(1)
 
 # Function to initialize Google Analytics Data API client
 def initialize_analytics_reporting():
@@ -34,7 +43,7 @@ def initialize_analytics_reporting():
         raise
 
 # Function to fetch GA-4 data for a specific page
-def fetch_ga4_data(client, property_id, page_path):
+def fetch_ga4_data(client, property_id, page_path, start_date="7daysAgo", end_date="today"):
     try:
         # Set up the query request
         request = RunReportRequest(
@@ -49,7 +58,7 @@ def fetch_ga4_data(client, property_id, page_path):
                 {'name': 'screenPageViews'},  # Total page views
                 {'name': 'eventCount'}        # Total events (e.g., downloads)
             ],
-            date_ranges=[DateRange(start_date="7daysAgo", end_date="today")],  # Adjust date range as needed
+            date_ranges=[DateRange(start_date=start_date, end_date=end_date)],  # Use provided date range
             dimension_filter={
                 'filter': {
                     'field_name': 'pagePath',
@@ -102,6 +111,7 @@ def live_stats():
 
 # Routes for dynamic GA4 data fetching
 @app.route("/ga4-summary-<section>")
+@cache.cached(timeout=300)  # Cache this route for 5 minutes
 def ga4_summary_section(section):
     try:
         # Map section to corresponding page paths in GA4
@@ -130,6 +140,12 @@ def ga4_summary_section(section):
 
         # Summarize the data
         def summarize(data):
+            if not data:
+                return {
+                    "activeUsers": 0,
+                    "pageViews": 0,
+                    "eventCount": 0
+                }
             return {
                 "activeUsers": sum(stat["activeUsers"] for stat in data),
                 "pageViews": sum(stat["pageViews"] for stat in data),
@@ -146,7 +162,7 @@ def ga4_summary_section(section):
         return jsonify(summary)
     except Exception as e:
         logging.error(f"Error in /ga4-summary-{section} route: {e}")
-        return jsonify({"error": "Failed to fetch GA-4 summary data"}), 500
+        return jsonify({"error": f"Failed to fetch GA-4 summary data: {str(e)}"}), 500
 
 # Run the Flask app
 if __name__ == "__main__":

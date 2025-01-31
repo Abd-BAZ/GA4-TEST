@@ -289,3 +289,9 @@ table tr:hover {
         padding: 8px 15px;
     }
 }
+
+#loading {
+    font-size: 1.2em;
+    color: #007bff;
+    margin-top: 20px;
+}

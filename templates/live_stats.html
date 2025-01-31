@@ -118,6 +118,11 @@
         </table>
     </div>
 
+    <!-- Loading Indicator -->
+    <div id="loading" style="display: none; text-align: center; margin-top: 20px;">
+        <p>Loading...</p>
+    </div>
+
     <script>
         let currentSection = "";
         let currentSummaryData = {};
@@ -126,12 +131,15 @@
         async function loadSummary(section) {
             currentSection = section;
 
+            // Show loading indicator
+            document.getElementById("loading").style.display = "block";
+
             // Update the summary title
             const summaryTitle = document.getElementById("summary-title");
             summaryTitle.textContent = `${section.charAt(0).toUpperCase() + section.slice(1)} Stats`;
 
-            // Fetch the summarized data from the backend
             try {
+                // Fetch the summarized data from the backend
                 const response = await fetch(`/ga4-summary-${section}`);
                 if (!response.ok) throw new Error("Failed to fetch GA-4 summary data.");
                 const data = await response.json();
@@ -154,6 +162,9 @@
                 tables.forEach(table => {
                     table.innerHTML = `<tr><td colspan="2" style="color: red; text-align: center;">Error loading data. Please try again later.</td></tr>`;
                 });
+            } finally {
+                // Hide loading indicator
+                document.getElementById("loading").style.display = "none";
             }
         }
 
