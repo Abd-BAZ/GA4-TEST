@@ -110,7 +110,7 @@ def live_stats():
     return render_template("live_stats.html")
 
 # Routes for dynamic GA4 data fetching
-@app.route("/ga4-summary-<section>")
+@app.route("/ga4-data-<section>")
 @cache.cached(timeout=300)  # Cache this route for 5 minutes
 def ga4_summary_section(section):
     try:
@@ -152,14 +152,14 @@ def ga4_summary_section(section):
                 "eventCount": sum(stat["eventCount"] for stat in data)
             }
 
-        summary = {
+        data = {
             "daily": summarize(daily_data),
             "monthly": summarize(monthly_data),
             "yearly": summarize(yearly_data)
         }
 
         # Return the summarized data as JSON
-        return jsonify(summary)
+        return jsonify(data)
     except Exception as e:
         logging.error(f"Error in /ga4-summary-{section} route: {e}")
         return jsonify({"error": f"Failed to fetch GA-4 summary data: {str(e)}"}), 500
