@@ -121,6 +121,7 @@
     <!-- Loading Indicator -->
     <div id="loading" style="display: none; text-align: center; margin-top: 20px;">
         <p>Loading...</p>
+        <div class="spinner"></div>
     </div>
 
     <script>
@@ -171,20 +172,24 @@
         // Populate a summary table with data
         function populateSummaryTable(tab, data) {
             const tableBody = document.getElementById(`${tab}-table`).querySelector("tbody");
-            tableBody.innerHTML = `
-                <tr>
-                    <td>Active Users</td>
-                    <td>${data.activeUsers}</td>
-                </tr>
-                <tr>
-                    <td>Page Views</td>
-                    <td>${data.pageViews}</td>
-                </tr>
-                <tr>
-                    <td>Event Count</td>
-                    <td>${data.eventCount}</td>
-                </tr>
-            `;
+            if (data.activeUsers === 0 && data.pageViews === 0 && data.eventCount === 0) {
+                tableBody.innerHTML = `<tr><td colspan="2" style="text-align: center;">No data available.</td></tr>`;
+            } else {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td>Active Users</td>
+                        <td>${data.activeUsers}</td>
+                    </tr>
+                    <tr>
+                        <td>Page Views</td>
+                        <td>${data.pageViews}</td>
+                    </tr>
+                    <tr>
+                        <td>Event Count</td>
+                        <td>${data.eventCount}</td>
+                    </tr>
+                `;
+            }
         }
 
         // Show the selected tab and hide others
