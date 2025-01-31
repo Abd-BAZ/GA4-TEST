@@ -28,6 +28,9 @@ def initialize_analytics_reporting():
         if not credentials_json:
             raise Exception("GA4_CREDENTIAL_JSON environment variable not set!")
 
+        # Log the credentials JSON (for debugging)
+        logging.info(f"GA4_CREDENTIAL_JSON: {credentials_json}")
+
         # Load credentials from the JSON string
         credentials = service_account.Credentials.from_service_account_info(
             json.loads(credentials_json),
