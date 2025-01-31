@@ -5,12 +5,12 @@ import logging
 from google.oauth2 import service_account
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import RunReportRequest, DateRange
-# from flask_caching import Cache
+from flask_caching import Cache
 
 app = Flask(__name__)
 
 # Configure caching
-# cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})  # 5 minutes
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})  # 5 minutes
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
