@@ -20,6 +20,10 @@ if not os.getenv("GA4_CREDENTIAL_JSON") or not os.getenv("GA4_PROPERTY_ID"):
     logging.error("Required environment variables (GA4_CREDENTIAL_JSON, GA4_PROPERTY_ID) are not set!")
     exit(1)
 
+# Log environment variables for debugging
+logging.info(f"GA4_CREDENTIAL_JSON: {os.getenv('GA4_CREDENTIAL_JSON')}")
+logging.info(f"GA4_PROPERTY_ID: {os.getenv('GA4_PROPERTY_ID')}")
+
 # Function to initialize Google Analytics Data API client
 def initialize_analytics_reporting():
     try:
@@ -113,10 +117,12 @@ def live_stats():
     return render_template("live_stats.html")
 
 # Routes for dynamic GA4 data fetching
-@app.route("/ga4-data-<section>")
+@app.route("/ga4-summary-<section>")
 @cache.cached(timeout=300)  # Cache this route for 5 minutes
 def ga4_summary_section(section):
     try:
+        logging.info(f"Route /ga4-summary-{section} accessed.")  # Debugging log
+
         # Map section to corresponding page paths in GA4
         page_paths = {
             "home": "/",
