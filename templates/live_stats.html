@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GA-4 Live Statistics</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FP2VEQZF5N"></script>
     <script>
@@ -40,6 +41,30 @@
         <button class="back-button" onclick="backToDashboard()">← Back to Dashboard</button>
         <h1 id="summary-title"></h1>
         <p>Below are the summarized user statistics for the selected section.</p>
+
+        <!-- Metric Cards -->
+        <div class="metric-cards">
+            <div class="card">
+                <h3>Active Users</h3>
+                <p id="active-users-value">0</p>
+                <span id="active-users-trend" class="trend"></span>
+            </div>
+            <div class="card">
+                <h3>Page Views</h3>
+                <p id="page-views-value">0</p>
+                <span id="page-views-trend" class="trend"></span>
+            </div>
+            <div class="card">
+                <h3>Event Count</h3>
+                <p id="event-count-value">0</p>
+                <span id="event-count-trend" class="trend"></span>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="chart-container">
+            <canvas id="summary-chart"></canvas>
+        </div>
 
         <!-- Tabs for Daily, Monthly, Yearly -->
         <div class="tabs">
@@ -95,29 +120,6 @@
         </div>
     </div>
 
-    <!-- Detailed Breakdown Section (Hidden by Default) -->
-    <div id="details-section" class="container" style="display: none;">
-        <button class="back-button" onclick="backToSummary()">← Back to Summary</button>
-        <h1 id="details-title"></h1>
-        <p>Below are the detailed user statistics for the selected metric.</p>
-
-        <table id="details-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Page Path</th>
-                    <th>Browser</th>
-                    <th>Active Users</th>
-                    <th>Page Views</th>
-                    <th>Event Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data will be dynamically injected here -->
-            </tbody>
-        </table>
-    </div>
-
     <!-- Loading Indicator -->
     <div id="loading" style="display: none; text-align: center; margin-top: 20px;">
         <p>Loading...</p>
@@ -127,6 +129,7 @@
     <script>
         let currentSection = "";
         let currentSummaryData = {};
+        let summaryChart;
 
         // Load summarized data for the selected section
         async function loadSummary(section) {
@@ -145,6 +148,14 @@
                 if (!response.ok) throw new Error("Failed to fetch GA-4 summary data.");
                 const data = await response.json();
                 currentSummaryData = data;
+
+                // Update metric cards
+                updateMetricCard("active-users", data.daily.activeUsers, data.monthly.activeUsers);
+                updateMetricCard("page-views", data.daily.pageViews, data.monthly.pageViews);
+                updateMetricCard("event-count", data.daily.eventCount, data.monthly.eventCount);
+
+                // Render the chart
+                renderChart(data.daily);
 
                 // Populate the summary tables
                 populateSummaryTable("daily", data.daily);
@@ -169,6 +180,66 @@
             }
         }
 
+        // Update a metric card with value and trend
+        function updateMetricCard(metric, currentValue, previousValue) {
+            const valueElement = document.getElementById(`${metric}-value`);
+            const trendElement = document.getElementById(`${metric}-trend`);
+
+            valueElement.textContent = currentValue;
+
+            if (previousValue !== 0) {
+                const trend = ((currentValue - previousValue) / previousValue) * 100;
+                trendElement.textContent = `${trend.toFixed(1)}%`;
+                trendElement.className = `trend ${trend >= 0 ? 'up' : 'down'}`;
+            } else {
+                trendElement.textContent = "N/A";
+                trendElement.className = "trend";
+            }
+        }
+
+        // Render the chart
+        function renderChart(data) {
+            const ctx = document.getElementById('summary-chart').getContext('2d');
+            if (summaryChart) summaryChart.destroy(); // Destroy existing chart
+
+            summaryChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.dates || [],
+                    datasets: [
+                        {
+                            label: 'Active Users',
+                            data: data.activeUsers || [],
+                            borderColor: '#5a67d8',
+                            fill: false,
+                        },
+                        {
+                            label: 'Page Views',
+                            data: data.pageViews || [],
+                            borderColor: '#4caf50',
+                            fill: false,
+                        },
+                        {
+                            label: 'Event Count',
+                            data: data.eventCount || [],
+                            borderColor: '#ff5722',
+                            fill: false,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const date = data.dates[index];
+                            alert(`You clicked on data for ${date}`);
+                        }
+                    },
+                },
+            });
+        }
+
         // Populate a summary table with data
         function populateSummaryTable(tab, data) {
             const tableBody = document.getElementById(`${tab}-table`).querySelector("tbody");
@@ -178,15 +249,15 @@
                 tableBody.innerHTML = `
                     <tr>
                         <td>Active Users</td>
-                        <td>${data.activeUsers}</td>
+                        <td><a href="javascript:void(0);" onclick="loadDetails('activeUsers')">${data.activeUsers}</a></td>
                     </tr>
                     <tr>
                         <td>Page Views</td>
-                        <td>${data.pageViews}</td>
+                        <td><a href="javascript:void(0);" onclick="loadDetails('pageViews')">${data.pageViews}</a></td>
                     </tr>
                     <tr>
                         <td>Event Count</td>
-                        <td>${data.eventCount}</td>
+                        <td><a href="javascript:void(0);" onclick="loadDetails('eventCount')">${data.eventCount}</a></td>
                     </tr>
                 `;
             }
@@ -212,12 +283,6 @@
         function backToDashboard() {
             document.getElementById("dashboard").style.display = "block";
             document.getElementById("summary-section").style.display = "none";
-        }
-
-        // Go back to the summary section
-        function backToSummary() {
-            document.getElementById("summary-section").style.display = "block";
-            document.getElementById("details-section").style.display = "none";
         }
     </script>
 </body>

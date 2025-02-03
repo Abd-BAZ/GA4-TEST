@@ -48,7 +48,7 @@ def initialize_analytics_reporting():
     except Exception as e:
         logging.error(f"Error initializing GA client: {e}")
         raise
-
+    
 # Function to fetch GA-4 data for a specific page
 def fetch_ga4_data(client, property_id, page_path, start_date="7daysAgo", end_date="today"):
     try:
@@ -115,6 +115,43 @@ def faq():
 @app.route("/live-stats")
 def live_stats():
     return render_template("live_stats.html")
+
+@app.route("/ga4-details-<section>/<metric>")
+def ga4_details_section(section, metric):
+    try:
+        # Map section to corresponding page paths in GA4
+        page_paths = {
+            "home": "/",
+            "about": "/about",
+            "faq": "/faq"
+        }
+        if section not in page_paths:
+            return jsonify({"error": "Invalid section specified"}), 400
+
+        # Initialize the GA-4 client
+        client = initialize_analytics_reporting()
+
+        # Fetch detailed data for the specific metric
+        property_id = os.getenv("GA4_PROPERTY_ID", "473956527")  # Use environment variable or default
+
+        # Fetch data for the last 7 days (adjust date range as needed)
+        detailed_data = fetch_ga4_data(client, property_id, page_paths[section], "7daysAgo", "today")
+
+        # Filter and format the detailed data based on the selected metric
+        breakdown_data = []
+        for stat in detailed_data:
+            breakdown_data.append({
+                "date": stat["date"],
+                "pagePath": stat["pagePath"],
+                "browser": stat["browser"],
+                "value": stat[metric.lower()]  # Use the metric name to get the value
+            })
+
+        # Return the detailed data as JSON
+        return jsonify(breakdown_data)
+    except Exception as e:
+        logging.error(f"Error in /ga4-details-{section}/{metric} route: {e}")
+        return jsonify({"error": f"Failed to fetch GA-4 detailed data: {str(e)}"}), 500
 
 # Routes for dynamic GA4 data fetching
 @app.route("/ga4-summary-<section>")
