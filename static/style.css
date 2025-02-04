@@ -8,11 +8,7 @@ body {
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    padding: 20px;
     text-align: center;
 }
 
@@ -50,251 +46,29 @@ h1 {
     transform: scale(1.1);
 }
 
-/* File Dashboard */
-.file-dashboard {
-    margin-top: 20px;
-    text-align: left;
-    max-width: 800px;
-    margin: 0 auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.file-dashboard ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.file-dashboard li {
-    margin: 10px 0;
-    font-size: 16px;
-}
-
-.file-dashboard a {
-    text-decoration: none;
-    color: #5a67d8;
-    font-weight: bold;
-    display: inline-block;
+/* Looker Studio Container */
+.looker-studio-container {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.file-dashboard a:hover {
-    text-decoration: underline;
-    color: #fff;
-    background-color: #5a67d8;
-    border-color: #5a67d8;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Tabs */
-.internal-tabs {
-    margin-top: 20px;
-    text-align: center;
-}
-
-/* Add this to your style.css */
-.tabs {
-    display: flex;
-    margin-bottom: 20px;
-}
-
-.tab-button {
-    padding: 10px 20px;
-    cursor: pointer;
-    border: 1px solid #ddd;
-    background-color: #f4f4f4;
-    margin-right: 10px;
-}
-
-.tab-button.active {
-    background-color: #007bff;
-    color: white;
-}
-
-.summary-table {
-    margin-top: 20px;
-}
-
-.summary-table table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.summary-table th, .summary-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.summary-table th {
-    background-color: #f4f4f4;
-}
-
-.summary-table tr:hover {
-    background-color: #f9f9f9;
-}
-
-/* Dashboard Boxes */
-.dashboard-boxes {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.dashboard-boxes .box {
-    background-color: #5a67d8;
-    color: white;
-    padding: 15px 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.dashboard-boxes .box:hover {
-    background-color: #434fa7;
-    transform: translateY(-3px);
-}
-
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 18px;
-    text-align: left;
-}
-
-table th,
-table td {
-    border: 1px solid #ddd;
-    padding: 12px 15px;
-}
-
-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-}
-
-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-table tr:hover {
-    background-color: #f1f1f1;
-    transition: background-color 0.2s ease;
-}
-
-/* Highlight rows */
-.highlight {
-    font-weight: bold;
-    color: #ff5722;
-}
-
-.highlight-high {
-    font-weight: bold;
-    color: #4CAF50;
-}
-
-.highlight-low {
-    font-weight: bold;
-    color: #FF5722;
-}
-
-.highlight-views {
-    font-weight: bold;
-    background-color: #FFEB3B;
-}
-
-/* Search Bar */
-.search-bar {
-    margin-bottom: 20px;
-}
-
-#search-input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    transition: border-color 0.3s ease;
-}
-
-#search-input:focus {
-    border-color: #5a67d8;
-    outline: none;
-}
-
-/* Stats Section */
-#stats-section {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 80%;
+    max-width: 1200px;
     margin: 20px auto;
-    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-#stats-section h1 {
-    color: #5a67d8;
-    margin-bottom: 20px;
-}
-
-#stats-section button {
-    background-color: #5a67d8;
-    color: white;
+.looker-studio-container iframe {
+    width: 100%;
+    height: 800px;
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#stats-section button:hover {
-    background-color: #434fa7;
-    transform: scale(1.05);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .file-dashboard,
-    .tab-content {
-        width: 95%;
-    }
-
-    .tab-button {
-        font-size: 14px;
-        padding: 8px 15px;
-    }
-
-    .dashboard-boxes {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .navbar {
-        justify-content: space-around;
-    }
-
-    .navbar a {
-        font-size: 1rem;
-        padding: 8px 15px;
-    }
-}
-
+/* Loading Indicator */
 #loading {
     font-size: 1.2em;
     color: #007bff;
     margin-top: 20px;
 }
+
 .spinner {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #3498db;
@@ -310,51 +84,20 @@ table tr:hover {
     100% { transform: rotate(360deg); }
 }
 
-/* Metric Cards */
-.metric-cards {
-    display: flex;
-    justify-content: space-around;
-    margin: 20px 0;
+/* Responsive Design */
+@media (max-width: 768px) {
+    .looker-studio-container iframe {
+        height: 600px;
+    }
 }
 
-.metric-cards .card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 30%;
-}
+@media (max-width: 480px) {
+    .looker-studio-container iframe {
+        height: 400px;
+    }
 
-.metric-cards .card h3 {
-    margin: 0 0 10px;
-    font-size: 1.2rem;
-    color: #333;
-}
-
-.metric-cards .card p {
-    font-size: 2rem;
-    font-weight: bold;
-    margin: 0;
-    color: #5a67d8;
-}
-
-.metric-cards .card .trend {
-    font-size: 1rem;
-    font-weight: normal;
-}
-
-.metric-cards .card .trend.up {
-    color: #4caf50;
-}
-
-.metric-cards .card .trend.down {
-    color: #ff5722;
-}
-
-/* Chart Container */
-.chart-container {
-    margin: 20px 0;
-    width: 100%;
-    max-width: 800px;
+    .navbar a {
+        font-size: 1rem;
+        padding: 8px 15px;
+    }
 }
