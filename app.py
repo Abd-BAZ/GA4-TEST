@@ -4,7 +4,7 @@ import json
 import logging
 from google.oauth2 import service_account
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
-from google.analytics.data_v1beta.types import RunReportRequest, DateRange
+from google.analytics.data_v1beta.types import RunReportRequest, DateRange, Dimension, Metric, Filter, FilterExpression
 from flask_caching import Cache
 
 app = Flask(__name__)
@@ -16,90 +16,54 @@ cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT':
 logging.basicConfig(level=logging.INFO)
 
 # Validate environment variables
-if not os.getenv("GA4_CREDENTIAL_JSON") or not os.getenv("GA4_PROPERTY_ID"):
-    logging.error("Required environment variables (GA4_CREDENTIAL_JSON, GA4_PROPERTY_ID) are not set!")
+GA4_CREDENTIAL_JSON = os.getenv("GA4_CREDENTIAL_JSON")
+GA4_PROPERTY_ID = os.getenv("GA4_PROPERTY_ID")
+if not GA4_CREDENTIAL_JSON or not GA4_PROPERTY_ID:
+    logging.error("Missing GA4_CREDENTIAL_JSON or GA4_PROPERTY_ID environment variables!")
     exit(1)
 
-# Log environment variables for debugging
-logging.info(f"GA4_CREDENTIAL_JSON: {os.getenv('GA4_CREDENTIAL_JSON')}")
-logging.info(f"GA4_PROPERTY_ID: {os.getenv('GA4_PROPERTY_ID')}")
-
-# Function to initialize Google Analytics Data API client
+# Initialize Google Analytics Client
 def initialize_analytics_reporting():
     try:
-        # Get the credentials JSON from the environment variable
-        credentials_json = os.getenv("GA4_CREDENTIAL_JSON")
-        if not credentials_json:
-            raise Exception("GA4_CREDENTIAL_JSON environment variable not set!")
-
-        # Log the credentials JSON (for debugging)
-        logging.info(f"GA4_CREDENTIAL_JSON: {credentials_json}")
-
-        # Load credentials from the JSON string
         credentials = service_account.Credentials.from_service_account_info(
-            json.loads(credentials_json),
+            json.loads(GA4_CREDENTIAL_JSON),
             scopes=['https://www.googleapis.com/auth/analytics.readonly']
         )
-
-        # Initialize the Analytics Data API client
-        client = BetaAnalyticsDataClient(credentials=credentials)
-        logging.info("Google Analytics client initialized successfully.")
-        return client
+        return BetaAnalyticsDataClient(credentials=credentials)
     except Exception as e:
-        logging.error(f"Error initializing GA client: {e}")
+        logging.error(f"Failed to initialize GA4 client: {e}")
         raise
-    
-# Function to fetch GA-4 data for a specific page
+
+# Fetch GA4 data
 def fetch_ga4_data(client, property_id, page_path, start_date="7daysAgo", end_date="today"):
     try:
-        # Set up the query request
         request = RunReportRequest(
             property=f"properties/{property_id}",
-            dimensions=[
-                {'name': 'date'},       # Date of activity
-                {'name': 'pagePath'},   # Tracks activity per page
-                {'name': 'browser'}     # Browser used by users
-            ],
-            metrics=[
-                {'name': 'activeUsers'},       # Active users
-                {'name': 'screenPageViews'},  # Total page views
-                {'name': 'eventCount'}        # Total events (e.g., downloads)
-            ],
-            date_ranges=[DateRange(start_date=start_date, end_date=end_date)],  # Use provided date range
-            dimension_filter={
-                'filter': {
-                    'field_name': 'pagePath',
-                    'string_filter': {
-                        'match_type': 'EXACT',
-                        'value': page_path
-                    }
-                }
-            }
+            dimensions=[Dimension(name="date"), Dimension(name="pagePath"), Dimension(name="browser")],
+            metrics=[Metric(name="activeUsers"), Metric(name="screenPageViews"), Metric(name="eventCount")],
+            date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+            dimension_filter=FilterExpression(filter=Filter(
+                field_name="pagePath",
+                string_filter=Filter.StringFilter(value=page_path)
+            ))
         )
-
-        # Run the query
         response = client.run_report(request)
-
-        # Process the response data
-        report_data = []
-        for row in response.rows:
-            data = {
-                "date": row.dimension_values[0].value,  # Date
-                "pagePath": row.dimension_values[1].value,  # Page path
-                "browser": row.dimension_values[2].value,  # Browser
-                "activeUsers": int(row.metric_values[0].value),  # Active users
-                "pageViews": int(row.metric_values[1].value),   # Page views
-                "eventCount": int(row.metric_values[2].value)   # Events (e.g., downloads)
+        return [
+            {
+                "date": row.dimension_values[0].value,
+                "pagePath": row.dimension_values[1].value,
+                "browser": row.dimension_values[2].value,
+                "activeUsers": int(row.metric_values[0].value),
+                "pageViews": int(row.metric_values[1].value),
+                "eventCount": int(row.metric_values[2].value)
             }
-            report_data.append(data)
-
-        logging.info(f"GA-4 data fetched successfully for page: {page_path}")
-        return report_data
+            for row in response.rows
+        ]
     except Exception as e:
-        logging.error(f"Error fetching GA-4 data for page {page_path}: {e}")
+        logging.error(f"Error fetching GA4 data for {page_path}: {e}")
         return []
 
-# Routes for static pages
+# Routes
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -116,100 +80,24 @@ def faq():
 def live_stats():
     return render_template("live_stats.html")
 
-@app.route("/ga4-details-<section>/<metric>")
-def ga4_details_section(section, metric):
-    try:
-        # Map section to corresponding page paths in GA4
-        page_paths = {
-            "home": "/",
-            "about": "/about",
-            "faq": "/faq"
-        }
-        if section not in page_paths:
-            return jsonify({"error": "Invalid section specified"}), 400
-
-        # Initialize the GA-4 client
-        client = initialize_analytics_reporting()
-
-        # Fetch detailed data for the specific metric
-        property_id = os.getenv("GA4_PROPERTY_ID", "473956527")  # Use environment variable or default
-
-        # Fetch data for the last 7 days (adjust date range as needed)
-        detailed_data = fetch_ga4_data(client, property_id, page_paths[section], "7daysAgo", "today")
-
-        # Filter and format the detailed data based on the selected metric
-        breakdown_data = []
-        for stat in detailed_data:
-            breakdown_data.append({
-                "date": stat["date"],
-                "pagePath": stat["pagePath"],
-                "browser": stat["browser"],
-                "value": stat[metric.lower()]  # Use the metric name to get the value
-            })
-
-        # Return the detailed data as JSON
-        return jsonify(breakdown_data)
-    except Exception as e:
-        logging.error(f"Error in /ga4-details-{section}/{metric} route: {e}")
-        return jsonify({"error": f"Failed to fetch GA-4 detailed data: {str(e)}"}), 500
-
-# Routes for dynamic GA4 data fetching
 @app.route("/ga4-summary-<section>")
-@cache.cached(timeout=300)  # Cache this route for 5 minutes
+@cache.cached(timeout=300)
 def ga4_summary_section(section):
+    page_paths = {"home": "/", "about": "/about", "faq": "/faq", "live-stats": "/live-stats"}
+    if section not in page_paths:
+        return jsonify({"error": "Invalid section specified"}), 400
     try:
-        logging.info(f"Route /ga4-summary-{section} accessed.")  # Debugging log
-
-        # Map section to corresponding page paths in GA4
-        page_paths = {
-            "home": "/",
-            "about": "/about",
-            "faq": "/faq"
-        }
-        if section not in page_paths:
-            return jsonify({"error": "Invalid section specified"}), 400
-
-        # Initialize the GA-4 client
         client = initialize_analytics_reporting()
-
-        # Fetch summarized data for daily, monthly, and yearly views
-        property_id = os.getenv("GA4_PROPERTY_ID", "473956527")  # Use environment variable or default
-
-        # Daily data
-        daily_data = fetch_ga4_data(client, property_id, page_paths[section], "7daysAgo", "today")
-
-        # Monthly data (last 30 days)
-        monthly_data = fetch_ga4_data(client, property_id, page_paths[section], "30daysAgo", "today")
-
-        # Yearly data (last 365 days)
-        yearly_data = fetch_ga4_data(client, property_id, page_paths[section], "365daysAgo", "today")
-
-        # Summarize the data
-        def summarize(data):
-            if not data:
-                return {
-                    "activeUsers": 0,
-                    "pageViews": 0,
-                    "eventCount": 0
-                }
-            return {
-                "activeUsers": sum(stat["activeUsers"] for stat in data),
-                "pageViews": sum(stat["pageViews"] for stat in data),
-                "eventCount": sum(stat["eventCount"] for stat in data)
-            }
-
-        summary = {
-            "daily": summarize(daily_data),
-            "monthly": summarize(monthly_data),
-            "yearly": summarize(yearly_data)
+        property_id = GA4_PROPERTY_ID
+        data = {
+            "daily": fetch_ga4_data(client, property_id, page_paths[section], "7daysAgo", "today"),
+            "monthly": fetch_ga4_data(client, property_id, page_paths[section], "30daysAgo", "today"),
+            "yearly": fetch_ga4_data(client, property_id, page_paths[section], "365daysAgo", "today")
         }
-
-        # Return the summarized data as JSON
-        return jsonify(summary)
+        return jsonify(data)
     except Exception as e:
-        logging.error(f"Error in /ga4-summary-{section} route: {e}")
-        return jsonify({"error": f"Failed to fetch GA-4 summary data: {str(e)}"}), 500
+        logging.error(f"Error in /ga4-summary-{section}: {e}")
+        return jsonify({"error": "Failed to fetch GA4 summary data"}), 500
 
-# Run the Flask app
 if __name__ == "__main__":
     app.run(debug=True)
