@@ -5,19 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAQ - GA-4 Website</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
-    <!-- Google Analytics & Tag Manager -->
+    <!-- Google Analytics Tracking with UTM Support -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FP2VEQZF5N"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
+
+        // Capture UTM parameters from URL
         function getUTMParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name) || "unknown";
         }
+
+        // Send UTM parameters to GA4
         gtag('config', 'G-FP2VEQZF5N', {
             'page_location': window.location.href,
             'page_referrer': document.referrer,
@@ -26,64 +28,47 @@
             'campaign_name': getUTMParameter('utm_campaign')
         });
     </script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PRN846G6');
+</script>
+<!-- End Google Tag Manager -->
+
 </head>
 <body>
 
     <!-- Google Tag Manager (noscript) -->
-    <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PRN846G6"
-        height="0" width="0" style="display:none;visibility:hidden">
-        </iframe>
-    </noscript>
+<noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PRN846G6"
+    height="0" width="0" style="display:none;visibility:hidden">
+    </iframe>
+</noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-<!-- Navigation Bar -->
-<div class="navbar">
-    <a href="{{ url_for('index') }}?utm_source=internal&utm_medium=nav&utm_campaign=home">Home</a>
-    <a href="{{ url_for('about') }}?utm_source=internal&utm_medium=nav&utm_campaign=about">About</a>
-    <a href="{{ url_for('faq') }}?utm_source=internal&utm_medium=nav&utm_campaign=faq">FAQ</a>
-    <a href="{{ url_for('live_stats') }}?utm_source=internal&utm_medium=nav&utm_campaign=live_stats">Live Stats</a>
-</div>
-
-    <!-- FAQ Section -->
-    <div class="container">
-        <h1>Frequently Asked Questions</h1>
-        
-        <div class="faq-list">
-            <div class="faq-item">
-                <input type="checkbox" id="faq1">
-                <label for="faq1" class="faq-title">How do I register a business name? <i class="fas fa-chevron-down"></i></label>
-                <div class="faq-content">
-                    <p>Download the guide here:</p>
-                    <a href="{{ url_for('static', filename='files/01 OCP_CM_ES_Registering a Business Name_UG v2.0.pdf') }}" download>
-                        <i class="fas fa-file-pdf"></i> Registering a Business Name Guide
-                    </a>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <input type="checkbox" id="faq2">
-                <label for="faq2" class="faq-title">What happens if my business name is returned? <i class="fas fa-chevron-down"></i></label>
-                <div class="faq-content">
-                    <p>Download the guide here:</p>
-                    <a href="{{ url_for('static', filename='files/02 OCP_CM_ES_Returned Business Name_UG v1.0.pdf') }}" download>
-                        <i class="fas fa-file-pdf"></i> Returned Business Name Guide
-                    </a>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <input type="checkbox" id="faq3">
-                <label for="faq3" class="faq-title">How can I change my business name details? <i class="fas fa-chevron-down"></i></label>
-                <div class="faq-content">
-                    <p>Download the guide here:</p>
-                    <a href="{{ url_for('static', filename='files/05 OCP_CM_ES_Changing Business Name Details_UG v0.2.pdf') }}" download>
-                        <i class="fas fa-file-pdf"></i> Changing Business Name Guide
-                    </a>
-                </div>
-            </div>
-        </div>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="{{ url_for('index') }}?utm_source=internal&utm_medium=nav&utm_campaign=home">Home</a>
+        <a href="{{ url_for('about') }}?utm_source=internal&utm_medium=nav&utm_campaign=about">About</a>
+        <a href="{{ url_for('faq') }}?utm_source=internal&utm_medium=nav&utm_campaign=faq">FAQ</a>
+        <a href="{{ url_for('live_stats') }}?utm_source=internal&utm_medium=nav&utm_campaign=live_stats">Live Stats</a>
     </div>
 
+    <!-- FAQ Dashboard -->
+    <div class="container">
+        <h1>FAQ - Business Name</h1>
+        <div class="file-dashboard">
+            <ul>
+                <li><a href="{{ url_for('static', filename='files/01 OCP_CM_ES_Registering a Business Name_UG v2.0.pdf') }}" download>01 OCP_CM_ES_Registering a Business Name_UG v2.0</a></li>
+                <li><a href="{{ url_for('static', filename='files/02 OCP_CM_ES_Returned Business Name_UG v1.0.pdf') }}" download>02 OCP_CM_ES_Returned Business Name_UG v1.0</a></li>
+                <li><a href="{{ url_for('static', filename='files/03 OCP_CM_ES_Rejected Business Name_UG v1.0.pdf') }}" download>03 OCP_CM_ES_Rejected Business Name_UG v1.0</a></li>
+                <li><a href="{{ url_for('static', filename='files/04 OCP_CM_ES_Viewing Approved Business Name_UG v1.0.pdf') }}" download>04 OCP_CM_ES_Viewing Approved Business Name_UG v1.0</a></li>
+                <li><a href="{{ url_for('static', filename='files/05 OCP_CM_ES_Changing Business Name Details_UG v0.2.pdf') }}" download>05 OCP_CM_ES_Changing Business Name Details_UG v0.2</a></li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
