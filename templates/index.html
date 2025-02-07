@@ -6,6 +6,9 @@
     <title>GA-4 Website</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+    <!-- Splide CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@latest/dist/css/splide.min.css">
+
     <!-- Google Analytics Tracking with UTM Support -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FP2VEQZF5N"></script>
     <script>
@@ -37,18 +40,6 @@
         })(window,document,'script','dataLayer','GTM-PRN846G6');
     </script>
     <!-- End Google Tag Manager -->
-
-    <!--Image Slider-->
-    <script>
-        document.addEventListener('DOMContentLoaded', function(){
-            new Splide('#image-slider',{
-                cover: true,
-                height: 0.5,
-            }).mount();
-        });
-    </script>
-    <!--End Image Slider-->
-
 </head>
 <body>
 
@@ -79,19 +70,32 @@
         </a>
     </div>
 
-    <!--Image Slider-->
-    <div>
+    <!-- Image Slider -->
+    <div id="image-slider" class="splide">
         <div class="splide__track">
             <ul class="splide__list">
                 <li class="splide__slide">
-                <img src="Image1">
-            </li>
-            <li class="splide__slide">
-                <img src="Image2">
-            </li>
+                    <img src="{{ url_for('static', filename='images/image1.jpg') }}" alt="Image 1">
+                </li>
+                <li class="splide__slide">
+                    <img src="{{ url_for('static', filename='images/image2.jpg') }}" alt="Image 2">
+                </li>
             </ul>
         </div>
     </div>
+
+    <!-- Splide JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@latest/dist/js/splide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new Splide('#image-slider', {
+                type: 'loop',
+                cover: true,
+                height: '300px',
+                autoplay: true
+            }).mount();
+        });
+    </script>
 
 </body>
 </html>
