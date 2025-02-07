@@ -101,3 +101,7 @@ h1 {
         padding: 8px 15px;
     }
 }
+.splide__slide img {
+    width: 100%;
+    height: auto;
+  }

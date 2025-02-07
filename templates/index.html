@@ -38,6 +38,17 @@
     </script>
     <!-- End Google Tag Manager -->
 
+    <!--Image Slider-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            new Splide('#image-slider',{
+                cover: true,
+                height: 0.5,
+            }).mount();
+        });
+    </script>
+    <!--End Image Slider-->
+
 </head>
 <body>
 
@@ -66,6 +77,20 @@
            download="GA4-Sample.pdf">
            Download
         </a>
+    </div>
+
+    <!--Image Slider-->
+    <div>
+        <div class="splide__track">
+            <ul class="splide__list">
+                <li class="splide__slide">
+                <img src="Image1">
+            </li>
+            <li class="splide__slide">
+                <img src="Image2">
+            </li>
+            </ul>
+        </div>
     </div>
 
 </body>
