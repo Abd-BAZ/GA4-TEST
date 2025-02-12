@@ -92,10 +92,13 @@
                 type: 'loop',
                 cover: true,
                 height: '300px',
-                autoplay: true
+                autoplay: true,  // Enable autoplay
+                interval: 3000,  // Set autoplay speed (e.g., 3 seconds)
+                pauseOnHover: false, // Prevent pause on hover
+                pauseOnFocus: false  // Prevent pause when the slider is focused
             }).mount();
         });
     </script>
-
+    
 </body>
 </html>
