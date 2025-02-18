@@ -7,7 +7,7 @@ from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import RunReportRequest, DateRange, Dimension, Metric, Filter, FilterExpression
 from flask_caching import Cache
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 # Configure caching
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})  # 5 minutes
